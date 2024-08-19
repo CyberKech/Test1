@@ -1,0 +1,30 @@
+import re
+from collections import defaultdict
+
+# Path to your log file
+log_file_path = 'C:\Users\DELL\Documents\LocaleMetaData'
+
+# Regular expression pattern to match failed login attempts
+pattern = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) WARNING Failed login attempt by user (\w+)"
+
+# Dictionary to track failed login attempts
+failed_logins = defaultdict(list)
+
+# Read the log file and search for failed login attempts
+with open(log_file_path, 'r') as log_file:
+    for line in log_file:
+        match = re.search(pattern, line)
+        if match:
+            timestamp, username = match.groups()
+            failed_logins[username].append(timestamp)
+
+# Define a threshold for suspicious activity
+threshold = 3
+
+# Check for users exceeding the threshold
+print("Suspicious Activity Detected:")
+for user, attempts in failed_logins.items():
+    if len(attempts) >= threshold:
+        print(f"User '{user}' had {len(attempts)} failed login attempts:")
+        for attempt in attempts:
+            print(f"  - {attempt}")
